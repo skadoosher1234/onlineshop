@@ -8,12 +8,13 @@ $address='';
 
 $errors=array();
 
-$conn = mysqli_connect('localhost', 'root', 'rootpwd', 'onlineshop');
+$conn = mysqli_connect('localhost', 'root', '', 'onlineshop');
 
-if($conn -> connect_error){
-	die("connection failed".$conn-> connect_error);
-}
+if(mysqli_connect_errno()){
+	echo "conection failed".mysqli_connect_error();
+}else{
 echo "connection successfully";
+}
 
 
 if (isset($_GET['logout'])) {
@@ -54,7 +55,7 @@ function register(){
 	if($password1 != $password2){
 		array_push($errors, "Two password do not match");
 	}
-	$check_query="SELECT * from customer where customer_username= '$username' and customer_email= '$email'";
+	$check_query="SELECT * from customers where customer_username= '$username' and customer_email= '$email'";
 	$result= mysqli_query($conn, $check_query);
 	$user = mysqli_fetch_assoc($result);
 	if($user){
@@ -69,13 +70,13 @@ function register(){
 		$password = md5($password1);
 		if(isset($_POST['user_type'])){
 			$user_type=e($_POST['user_type']);
-			$query = "INSERT into customer(customer_name, customer_username, customer_address, customer_pass, customer_email, user_type)values('$name', '$username', '$address', '$password', '$email','$user_type')";
+			$query = "INSERT into customers (customer_name, customer_username, customer_address, customer_password, customer_email, user_type)values('$name', '$username', '$address', '$password', '$email','$user_type')";
 			mysqli_query($conn, $query);
 			$_SESSION['success'] = "New user succesfully created.";
 			header('location:admin_home.php');
 		}
 		else{
-			$query = "INSERT into customer(customer_name, customer_username, customer_address, customer_pass, customer_email, user_type)values('$name', '$username', '$address', '$password', '$email','user')";
+			$query = "INSERT into customers(customer_name, customer_username, customer_address, customer_password, customer_email, user_type)values('$name', '$username', '$address', '$password', '$email','user')";
 			mysqli_query($conn, $query);
 			$logged_in_user_id = mysqli_insert_id($conn);
 			echo mysqli_insert_id($conn) ."inserted ID";
@@ -131,7 +132,7 @@ function login(){
 	}
 	if(count($errors) == 0){
 		$password = md5($password);
-		$query = "SELECT * from customer where customer_username = '$username' and customer_pass = '$password' LIMIT 1";
+		$query = "SELECT * from customers where customer_username = '$username' and customer_password = '$password' LIMIT 1";
 		$result= mysqli_query($conn, $query);
 		if(mysqli_num_rows($result) == 1){
 			
@@ -162,8 +163,19 @@ if(isset($_POST['sub_pro'])){
 }
 function addProduct(){
 	global $conn,$errors;
+	
+	
+	$name=e($_POST['names']);
+	$category=e($_POST['category']);
+	$quantity=e($_POST['quantity']);
+	$supplier=e($_POST['supplier']);
+	$discount=e($_POST['discount']);
+	$price=e($_POST['price']);
+	$date=e($_POST['date']);
+	
 
-	if(empty($_POST['name'])){
+
+	if(empty($_POST['names'])){
 		array_push($errors, "name required");
 	}
 	if(empty($_POST['category'])){
@@ -181,21 +193,32 @@ function addProduct(){
 	if(empty($_POST['date'])){
 		array_push($errors, "date required");
 	}
-	if(count($errors) == 0){
-		$name=e($_POST['name']);
-		$category=e($_POST['category']);
-		$quantity=e($_POST['quantity']);
-		$supplier=e($_POST['supplier']);
-		$discount=e($_POST['discount']);
-		$price=e($_POST['price']);
-		$date=e($_POST['date']);
-		$query="INSERT into product (product_name, product_category, product_supplier, product_quantity, product_discount, product_price, product_date)values('$name', '$category','$supplier', '$quantity', '$discount', '$price', '$date')";
-		mysqli_query($conn, $query);
-		$_SESSION['success'] = "New products added succesfully";
-		header('location: admin_home.php');
-
+	if(empty($_POST['image'])){
+		array_push($errors, "file is required");
 	}
-}
+	if(count($errors) == 0){
+		if(isset($_FILES['image'])){
+			$image=$_FILES['image']['name'];
+			$target_file="Images/".basename($image);
+	
+			$query="INSERT into products (product_name, product_category, product_supplier, product_quantity, product_discount, product_price, product_date, product_image) values ('$name', '$category','$supplier', '$quantity', '$discount', '$price', '$date', '$image')";
+
+			mysqli_query($conn,$query);
+			if(move_uploaded_file($_FILES['image']['tmp_name'], $target_file)){
+			echo "file uploaded succesfully";
+			}else{
+			echo "file didnt uploaded";
+			}
+		}
+		}
+		}	//if(move_uploaded_file($_FILES['image']['tmp_name'], $target_file)){
+	//		echo "file uploaded successfully";
+	//}else{
+	//		echo "file didnt uploaded";
+
+
+
+
 
 
 

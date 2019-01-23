@@ -42,7 +42,7 @@
 // $result = mysqli_query($conn, $query);
 // if($row = mysqli_fetch_array($result)){
 // 	echo '<tr>';
-// 		echo '<th>.'$row["product_name"]'</th>';
+// 		echo '<th>'.$row["product_name"]'</th>';
 // 		echo '<th>'.$row["product_price"]'</th>';
 // 	echo '</tr>';
 // }

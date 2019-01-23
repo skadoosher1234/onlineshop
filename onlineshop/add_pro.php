@@ -7,11 +7,11 @@
 <body>
 	<div><h2> Add products </h2></div>
 	<div>
-		<form method="post" action="add_pro.php">
+		<form method="post" action="add_pro.php" enctype="multipart/form-data">
 			<?php echo display_error() ?>
 			<div>
 				<label>Product Name</label>
-				<input type="text" name="name">
+				<input type="text" name="names">
 			</div>
 			<div>
 				<label>Category</label>
@@ -44,6 +44,10 @@
 				<label>Date</label>
 				<input type="date" name="date">
 			</div>
+			<div>
+				<label>Image</label>
+				<input type="file" name="image">
+		    </div>
 			<div>
 				<button type="submit" name="sub_pro">Save</button>
 			</div>
